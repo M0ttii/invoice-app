@@ -1,6 +1,7 @@
 
 import { Dashboard } from "@/components/ui/Dashboard/Dashboard";
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 export default async function DashboardPage() {
@@ -9,6 +10,10 @@ export default async function DashboardPage() {
     const {
         data: { user }
     } = await supabase.auth.getUser();
+
+    if(!user) {
+        return redirect('/signin');
+    }
 
     const { data: subscription, error } = await supabase
         .from('subscriptions')

@@ -1,95 +1,53 @@
 'use client'
-import { LinkIcon, LockIcon } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Input } from "../input";
-import { Button } from "../button";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../form";
+import { useRef, useState } from "react";
+import StripeAPIComponent from "./AddStripeAccount";
+import SelectedAccounts from "./SelectedAccounts";
 import { createClient } from "@/utils/supabase/client";
 
-interface StripeAPIComponentProps {
-    onButtonClick: () => void;
-}
-
-const FormSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-})
-
-
-
-export default function StripeAPIComponent() {
+export default function Setup() {
+    const [selectedAccounts, setSelectedAccounts] = useState([""])
+    const selectedAccountsRef = useRef<{ add: (account: string) => void } | null>(null);
     const supabase = createClient();
 
-    const updateKey = async (key: string) => {
+    async function addAccount(key: string) {
         const { data: userDetails } = await supabase
             .from('users')
             .select('*')
             .single();
 
-        console.log(userDetails?.full_name);
+        const { data: existingKey } = await supabase.from('stripekeys').select('*').eq('key', key).single();
+        if (existingKey) {
+            console.log("Key already exists");
+            return;
+        }
 
-
-            const {data: stripeKey, error } = await supabase.from('stripekeys').select('*').single();
-            if(error || stripeKey === null){
-                console.log(error);
-                const result = await supabase.from('stripekeys').insert({key: key, user_id: userDetails?.id});
-                if(!result.error && result.status === 201){
-                    console.log("Key inserted");
-                }
-                return;
+        const result = await supabase.from('stripekeys').insert({ key: key, user_id: userDetails?.id });
+        if (!result.error && result.status === 201) {
+            console.log("Key inserted");
+            setSelectedAccounts([...selectedAccounts, key])
+            if (selectedAccountsRef.current) {
+                selectedAccountsRef.current.add(key);
             }
-            console.log(stripeKey?.key);
+        }
 
-        
     }
 
-
-
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        defaultValues: {
-            username: "",
-        },
-    })
-
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        updateKey(data.username);
-    }
-
-    const handleButtonClick = () => {
-        console.log("Der Button wurde geklickt!");
-        // Fügen Sie hier die Logik ein, die ausgeführt werden soll
-    };
     return (
-
-
-        <div className="max-w-sm mx-auto my-8 p-6 bg-white rounded-lg shadow-md">
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Stripe API Key</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    Please provide your Stripe API Key.
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit">Submit</Button>
-                </form>
-            </Form>
+        <div className="flex min-h-screen justify-center w-full flex-col bg-muted/40">
+            <div className="flex flex-col sm:gap-4 sm:py-4">
+                <main className="grid flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+                    <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
+                        <div className="grid gap-4 lg:grid-cols-3 lg:gap-8">
+                            <div className="grid auto-rows-max items-center gap-4 lg:col-span-2 lg:gap-8">
+                                <StripeAPIComponent selectedAccounts={selectedAccounts} buttonClick={addAccount} />
+                            </div>
+                            <div className="grid auto-rows-max items-center justify-center gap-4 lg:gap-8"> {/* Updated line */}
+                                <SelectedAccounts selectedAccounts={selectedAccounts} ref={selectedAccountsRef}></SelectedAccounts>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
         </div>
-
     )
 }
-
