@@ -1,5 +1,5 @@
 'use client'
-import { Home, LineChart, ListFilter, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, Users2, File, Copy, Truck, MoreVertical, CreditCard, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, LineChart, ListFilter, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, Users2, File, Copy, Truck, MoreVertical, CreditCard, ChevronLeft, ChevronRight, XOctagon, LoaderIcon, Loader2Icon, CopyIcon } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -23,14 +23,32 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "../separator";
 import { Pagination, PaginationContent, PaginationItem } from "../pagination";
 import Stripe from "stripe";
+import { useEffect, useState } from "react";
+import { Skeleton } from "../skeleton";
+import { createClient } from "@/utils/supabase/client";
 
 interface Props {
     sessions: Stripe.Checkout.Session[]
 }
 
 export function Dashboard(sessions: Props) {
+    const [isLoading, setIsLoading] = useState(true);
+    const supabase = createClient();
+    const [userID, setUserID] = useState<string | undefined>("");
+
+    useEffect(() => {
+        async function getUser() {
+            return await supabase
+                .from('users')
+                .select('*')
+                .single();
+        }
+
+        getUser().then((user) => setUserID(user.data?.id)).finally(() => setIsLoading(false));
+    }, []);
+
     return (
-        <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <div className="flex min-h-screen w-full flex-col bg-[#161618]">
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-3">
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
                     <Breadcrumb className="hidden md:flex">
@@ -56,7 +74,7 @@ export function Dashboard(sessions: Props) {
                             className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
                         />
                     </div>
-                    
+
                 </header>
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
                     <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -65,12 +83,32 @@ export function Dashboard(sessions: Props) {
                                 <CardHeader className="pb-3">
                                     <CardTitle>Invoice Link</CardTitle>
                                     <CardDescription className="max-w-lg text-balance leading-relaxed">
-                                        Create an invoice link to share with your customers.
+                                        Share this link with your customers.
                                         Customers can retrieve their invoices by clicking the link.
                                     </CardDescription>
                                 </CardHeader>
-                                <CardFooter>
-                                    <Button>Create Invoice Link</Button>
+                                <CardFooter className="space-x-4">
+                                    {/* <Button onClick={obSubmit}>
+                                        {isLoading && (
+                                            <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                                        )}
+                                        Create Invoice Link
+                                    </Button> */}
+                                    <div className="w-full h-10 bg-white border rounded-lg text-center items-center flex p-2">
+                                        {isLoading ? (
+                                            <Skeleton className="h-4 w-full" />
+                                        ) : (
+                                            <div className="flex justify-start font-mono text-sm text-zinc-900">
+                                                http://localhost:3000/u/{userID}
+                                            </div>
+                                        )
+                                        }
+                                        <div className="flex w-full justify-end">
+                                            <Button className="w-8 h-8 hover:bg-zinc-100 hover:text-zinc-50" variant="ghost" size="icon">
+                                                <CopyIcon className="h-4 w-4 text-zinc-900" />
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </CardFooter>
                             </Card>
                             <Card>
@@ -171,8 +209,8 @@ export function Dashboard(sessions: Props) {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {sessions.sessions.map((session) => (
-                                                    <TableRow className="bg-accent">
+                                                {sessions.sessions.map((session, index) => (
+                                                    <TableRow className="bg-accent" key={index}>
                                                         <TableCell>
                                                             <div className="font-medium">{session.customer_details?.name}</div>
                                                             <div className="hidden text-sm text-muted-foreground md:inline">

@@ -8,18 +8,23 @@ import { Button } from '../button';
 import { Input } from '../input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../dropdown-menu';
 import { getRedirectMethod } from '@/utils/auth-helpers/settings';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { handleRequest } from '@/utils/auth-helpers/client';
 import { SignOut } from '@/utils/auth-helpers/server';
 import { createClient } from '@/utils/supabase/client';
 
-export default async function Navbar() {
+export default function Navbar() {
+  const pathname = usePathname(); 
   const supabase = createClient();
   const router = getRedirectMethod() === 'client' ? useRouter() : null;
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  if(pathname.startsWith('/u/')) {
+    return null;
+  }
+
+  // const {
+  //   data: { user }
+  // } = await supabase.auth.getUser();
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">

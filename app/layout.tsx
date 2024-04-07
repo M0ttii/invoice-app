@@ -7,6 +7,8 @@ import { getURL } from '@/utils/helpers';
 import 'styles/main.css';
 import { ThemeProvider } from '@/themeprovider';
 
+require('dotenv').config();
+
 const meta = {
   title: 'Next.js Subscription Starter',
   description: 'Brought to you by Vercel, Stripe, and Supabase.',
@@ -50,9 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
-      <body className="bg-white loading">
+      <body className="bg-white dark:bg-muted/30 loading">
         <Navbar />
-        <ThemeProvider>
+        <ThemeProvider attribute='class' defaultTheme='dark'>
           <main
             id="skip"
             className="min-h-[calc(100dvh-4rem)] md:min-h[calc(100dvh-5rem)]"
