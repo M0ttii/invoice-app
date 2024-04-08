@@ -1,3 +1,4 @@
+'use client'
 import { ListFilter, MoreHorizontal } from "lucide-react";
 import { Badge } from "../badge";
 import { Button } from "../button";
@@ -7,30 +8,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import Stripe from "stripe";
+import { getInvoicesForCustomer, retrieveCheckoutSessions } from "@/app/actions";
+import { Invoice } from "@/models/Invoice";
+import { useState } from "react";
+import { InvoiceDialog } from "./InvoiceDialog";
 
 interface Props {
-    sessions: Stripe.Checkout.Session[]
+    invoices: Invoice[];
 }
 
-export default function InvoiceList({ sessions }: Props) {
-    const supabase = createClient();
-
-    async function getSessions() {
-        const { data: stripeKey } = await supabase.from('stripekeys').select('*').single();
-        const stripe = new Stripe(stripeKey?.key || '', {
-            apiVersion: '2023-10-16',
-        });
+export default function InvoiceList({ invoices }: Props) {
+    // const orders = getInvoicesForCustomer(user_id, customer_email);
+    const [open, setOpen] = useState(false);
     
-        return await stripe.checkout.sessions.list({
-            limit: 10,
-            status: 'complete',
-        });
-    }
-
-    const sessions = await getSessions();
 
     return (
         <div className="w-full">
+            <InvoiceDialog open={open} setOpen={setOpen} />
             <Tabs defaultValue="week">
                 <div className="flex items-center">
                     <TabsList>
@@ -89,11 +83,12 @@ export default function InvoiceList({ sessions }: Props) {
                                             Date
                                         </TableHead>
                                         <TableHead className="text-right">Amount</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {sessions.map((session, index) => (
-                                        <TableRow className="bg-accent" key={index}>
+                                    {invoices.map((session, index) => (
+                                        <TableRow className="" key={index}>
                                             <TableCell>
                                                 <div className="font-medium">{session.customer_details?.name}</div>
                                                 <div className="hidden text-sm text-muted-foreground md:inline">
@@ -105,13 +100,16 @@ export default function InvoiceList({ sessions }: Props) {
                                             </TableCell>
                                             <TableCell className="hidden sm:table-cell">
                                                 <Badge className="text-xs" variant="secondary">
-                                                    {session.status?.toString()}
+                                                    test
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 {session.created?.toString()}
                                             </TableCell>
                                             <TableCell className="text-right">{session.amount_total?.toExponential()}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button onClick={() => setOpen(true)}>Edit</Button>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
 
