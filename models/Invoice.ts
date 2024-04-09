@@ -5,6 +5,14 @@ export type Invoice = {
     created: number,
     currency: string | null,
     customer_details: CustomerDetails,
+    items: Item[],
+}
+
+export type Item = {
+    name: string,
+    quantity: number,
+    price: number,
+    total: number,
 }
 
 type CustomerDetails = {

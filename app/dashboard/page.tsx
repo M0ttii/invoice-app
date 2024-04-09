@@ -1,4 +1,3 @@
-
 import { Dashboard } from "@/components/ui/Dashboard/Dashboard";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -32,23 +31,7 @@ export default async function DashboardPage() {
     //     .eq('prices.active', true)
     //     .order('metadata->index')
     //     .order('unit_amount', { referencedTable: 'prices' });
-
-    async function getSessions() {
-        const { data: stripeKey } = await supabase.from('stripekeys').select('*').single();
-        const stripe = new Stripe(stripeKey?.key || '', {
-            apiVersion: '2023-10-16',
-        });
-    
-        return await stripe.checkout.sessions.list({
-            limit: 10,
-            status: 'complete',
-        });
-    }
-
-    const sessions = await getSessions();
-
-
     return (
-        <Dashboard sessions={sessions.data}></Dashboard>
+        <Dashboard></Dashboard>
     );
 }

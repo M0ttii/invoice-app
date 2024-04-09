@@ -26,12 +26,13 @@ import Stripe from "stripe";
 import { useEffect, useState } from "react";
 import { Skeleton } from "../skeleton";
 import { createClient } from "@/utils/supabase/client";
+import { getDashboardSessions } from "@/app/actions";
+import InvoiceCardLoading from "./InvoiceCardLoading";
 
-interface Props {
-    sessions: Stripe.Checkout.Session[]
-}
+export const revalidate = 60;
 
-export function Dashboard(sessions: Props) {
+export function Dashboard() {
+    const [sessions, setSessions] = useState<Stripe.Checkout.Session[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const supabase = createClient();
     const [userID, setUserID] = useState<string | undefined>("");
@@ -44,7 +45,13 @@ export function Dashboard(sessions: Props) {
                 .single();
         }
 
-        getUser().then((user) => setUserID(user.data?.id)).finally(() => setIsLoading(false));
+        async function fetchSessions() {
+            const [user, sessions] = await Promise.all([getUser(), getDashboardSessions()]);
+            setUserID(user.data?.id);
+            setSessions(sessions.data);
+        }
+
+        fetchSessions().finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -94,18 +101,18 @@ export function Dashboard(sessions: Props) {
                                         )}
                                         Create Invoice Link
                                     </Button> */}
-                                    <div className="w-full h-10 bg-white border rounded-lg text-center items-center flex p-2">
+                                    <div className="w-full h-10 bg-white dark:bg-[#18181B] border rounded-lg text-center items-center flex p-2">
                                         {isLoading ? (
                                             <Skeleton className="h-4 w-full" />
                                         ) : (
-                                            <div className="flex justify-start font-mono text-sm text-zinc-900">
+                                            <div className="flex justify-start font-mono text-nowrap text-sm text-zinc-900 dark:text-[#ffffff]/70">
                                                 http://localhost:3000/u/{userID}
                                             </div>
                                         )
                                         }
                                         <div className="flex w-full justify-end">
                                             <Button className="w-8 h-8 hover:bg-zinc-100 hover:text-zinc-50" variant="ghost" size="icon">
-                                                <CopyIcon className="h-4 w-4 text-zinc-900" />
+                                                <CopyIcon className="h-4 w-4 text-zinc-900 dark:text-white" />
                                             </Button>
                                         </div>
                                     </div>
@@ -185,19 +192,19 @@ export function Dashboard(sessions: Props) {
                             </div>
                             <TabsContent value="week">
                                 <Card>
-                                    <CardHeader className="px-7">
+                                    <CardHeader className="px-7 ">
                                         <CardTitle>Orders</CardTitle>
                                         <CardDescription>
                                             Recent orders from your store.
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="-mt-5">
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
-                                                    <TableHead>Customer</TableHead>
+                                                    <TableHead className="">Customer</TableHead>
                                                     <TableHead className="hidden sm:table-cell">
-                                                        Type
+                                                        Business
                                                     </TableHead>
                                                     <TableHead className="hidden sm:table-cell">
                                                         Status
@@ -208,10 +215,24 @@ export function Dashboard(sessions: Props) {
                                                     <TableHead className="text-right">Amount</TableHead>
                                                 </TableRow>
                                             </TableHeader>
-                                            <TableBody>
-                                                {sessions.sessions.map((session, index) => (
-                                                    <TableRow className="bg-accent" key={index}>
-                                                        <TableCell>
+                                            {isLoading && (
+                                                <TableBody>
+                                                    <TableRow>
+                                                        <TableCell colSpan={5}>
+                                                            <Skeleton className="h-6 min-w-full" />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell colSpan={5}>
+                                                            <Skeleton className="h-6 w-full" />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            )}
+                                            <TableBody hidden={isLoading}>
+                                                {sessions.map((session, index) => (
+                                                    <TableRow className="dark:bg-[#18181B] hover:z-100 hover:cursor-pointer transition ease-in-out delay-50 hover:scale-[1.01] duration-300" key={index}>
+                                                        <TableCell className="">
                                                             <div className="font-medium">{session.customer_details?.name}</div>
                                                             <div className="hidden text-sm text-muted-foreground md:inline">
                                                                 {session.customer_details?.email}
@@ -239,7 +260,8 @@ export function Dashboard(sessions: Props) {
                             </TabsContent>
                         </Tabs>
                     </div>
-                    <div>
+                    {isLoading && <InvoiceCardLoading></InvoiceCardLoading>}
+                    <div hidden={isLoading}>
                         <Card className="overflow-hidden">
                             <CardHeader className="flex flex-row items-start bg-muted/50">
                                 <div className="grid gap-0.5">

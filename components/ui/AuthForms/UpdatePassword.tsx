@@ -1,6 +1,6 @@
 'use client';
 
-import Button from '@/components/ui/Button';
+import  Button  from '../Button2';
 import { updatePassword } from '@/utils/auth-helpers/server';
 import { handleRequest } from '@/utils/auth-helpers/client';
 import { useRouter } from 'next/navigation';

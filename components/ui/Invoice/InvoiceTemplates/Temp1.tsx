@@ -1,3 +1,4 @@
+import { Invoice } from "@/models/Invoice";
 import * as React from "react";
 
 interface InvoiceItemProps {
@@ -88,7 +89,11 @@ const AdditionalNotes: React.FC<AdditionalNotesProps> = ({ notes }) => (
   </div>
 );
 
-function MyComponent() {
+interface InvoiceTemplate1Props {
+  invoice: Invoice | null;
+}
+
+function InvoiceTemplate1({ invoice }: InvoiceTemplate1Props) {
   const invoiceItems = [
     {
       name: "Invoice Item 1",
@@ -104,7 +109,7 @@ function MyComponent() {
     email: "email@company.com",
     id1Label: "ID#1 Label",
     id1Value: "1234567890-123",
-    id2Label: "ID#2 Label", 
+    id2Label: "ID#2 Label",
     id2Value: "ABC-0987654321",
   };
 
@@ -123,15 +128,15 @@ function MyComponent() {
 
   const invoiceTotal = invoiceItems.reduce((acc, item) => acc + item.total, 0);
 
-return (
+  return (
     <div className="flex flex-col pt-2.5 pb-20 h-[297mm] w-[210mm] bg-white rounded-3xl max-md:max-w-full">
       <div className="flex flex-col px-2.5 w-full max-md:max-w-full">
         <div className="flex gap-5 p-5 text-xs rounded-xl bg-slate-100 max-md:flex-wrap max-md:max-w-full">
           <div className="flex flex-col flex-1 self-start mt-1 text-gray-900">
             <div className="text-xl font-bold">Invoice</div>
             <div className="mt-10 text-right text-gray-500">Billed To:</div>
-            <div className="mt-2.5 text-sm font-semibold">Client Name</div>
-            <div className="mt-2">Address / Contact Info</div>
+            <div className="mt-2.5 text-sm font-semibold">{invoice?.customer_details.name}</div>
+            <div className="mt-2">{invoice?.customer_details.adress.city}</div>
           </div>
           <div className="flex flex-col flex-1 justify-between items-end text-right text-gray-500">
             <div>Invoice No.</div>
@@ -150,12 +155,15 @@ return (
             <div>Total</div>
           </div>
         </div>
-        <div className="flex gap-5 justify-between mx-5 mt-8 text-xs text-gray-900 max-md:flex-wrap max-md:mr-2.5">
-          <div>Invoice Item 1</div>
-          <div className="text-right text-gray-500">1</div>
-          <div className="text-right text-gray-500">4,000.00</div>
-          <div className="text-right">4,000.00</div>
-        </div>
+        {invoice?.items.map((item, index) => (
+          <div key={index} className="flex gap-5 justify-between mx-5 mt-8 text-xs text-gray-900 max-md:flex-wrap max-md:mr-2.5">
+            <div>{typeof item.name === 'string' ? item.name : 'N/A'}</div>
+            <div className="text-right text-gray-500">{Number.isFinite(item.quantity) ? item.quantity : 'N/A'}</div>
+            <div className="text-right text-gray-500">{Number.isFinite(item.price) ? item.price : 'N/A'}</div>
+            <div className="text-right">{Number.isFinite(item.total) ? item.total : 'N/A'}</div>
+          </div>
+        ))}
+
         <div className="flex gap-5 justify-between self-end px-5 py-3 mt-52 max-w-full text-right whitespace-nowrap rounded-xl bg-slate-100 w-[243px] max-md:mt-10">
           <div className="flex gap-1 my-auto text-xs text-gray-500">
             <div>Total</div>
@@ -214,4 +222,4 @@ return (
   );
 }
 
-export default MyComponent;
+export default InvoiceTemplate1;

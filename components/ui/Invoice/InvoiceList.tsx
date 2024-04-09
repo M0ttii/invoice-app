@@ -20,11 +20,17 @@ interface Props {
 export default function InvoiceList({ invoices }: Props) {
     // const orders = getInvoicesForCustomer(user_id, customer_email);
     const [open, setOpen] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+
+    function openInvoice(invoice: Invoice) {
+        setSelectedInvoice(invoice);
+        setOpen(true);
+    }
     
 
     return (
         <div className="w-full">
-            <InvoiceDialog open={open} setOpen={setOpen} />
+            <InvoiceDialog invoice={selectedInvoice} open={open} setOpen={setOpen} />
             <Tabs defaultValue="week">
                 <div className="flex items-center">
                     <TabsList>
@@ -108,7 +114,7 @@ export default function InvoiceList({ invoices }: Props) {
                                             </TableCell>
                                             <TableCell className="text-right">{session.amount_total?.toExponential()}</TableCell>
                                             <TableCell className="text-right">
-                                                <Button onClick={() => setOpen(true)}>Edit</Button>
+                                                <Button onClick={() => openInvoice(session)}>Edit</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
