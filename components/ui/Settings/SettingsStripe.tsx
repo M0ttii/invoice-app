@@ -1,3 +1,4 @@
+'use client'
 import { Delete, DeleteIcon, Edit, Trash } from "lucide-react";
 import { Button } from "../button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../card";
@@ -5,13 +6,22 @@ import { Input } from "../input";
 import { Label } from "../label";
 import { Switch } from "../switch";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../select";
+import { getAccountName, getAccountPairs } from "@/app/actions";
+import { Suspense, use, useEffect, useState } from "react";
+import Stripe from "stripe";
+import useSWR, { Fetcher } from 'swr'
+import { set } from "react-hook-form";
 
-const Account = () => {
+interface AccountProps {
+    name: string | null | undefined;
+}
+
+const Account = (props: AccountProps) => {
     return (
         <div className="flex justify-between w-1/2 h-10 dark:bg-[#18181B] border rounded-md">
             <div className="flex justify-start items-center pl-2 space-x-2">
                 <div className="rounded-xl h-7 w-7 bg-green-300"></div>
-                <Label>InvoiceHub</Label>
+                <Label>{props.name}</Label>
             </div>
             <div className="flex justify-end items-center pr-2">
                 <Button className="dark" variant="ghost" size="icon">
@@ -25,7 +35,17 @@ const Account = () => {
     )
 }
 
-export default function SettingsStripe() {
+interface AccountPair {
+    account: Stripe.Account;
+    key: string;
+};
+
+interface SettingsStripeProps {
+    data: AccountPair[];
+}
+
+
+export default function SettingsStripe({ data }: SettingsStripeProps) {
     return (
         <div className="grid gap-6">
             <Card>
@@ -37,8 +57,12 @@ export default function SettingsStripe() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col space-y-2">
-                        <Account />
-                        <Account />
+                        <Suspense fallback={<p>Loading</p>}>
+
+                            {data.map((pair: AccountPair, index) => (
+                                <Account key={index} name={pair.account.settings?.dashboard.display_name} />
+                            ))}
+                        </Suspense>
                     </div>
                 </CardContent>
                 <CardFooter className="border-t px-6 py-4">

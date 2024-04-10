@@ -15,7 +15,13 @@ enum Section {
     Branding,
 }
 
-export default function Settings() {
+interface SettingsProps{
+    data: any;
+
+}
+
+
+export default function Settings({data}: SettingsProps) {
     const searchParams = useSearchParams()
     const [section, setSection] = useState(Section.Personal)
 
@@ -53,7 +59,7 @@ export default function Settings() {
                     )}
                     {section === Section.Stripe && (
                         <div>
-                            <SettingsStripe/>
+                            <SettingsStripe data={data}/>
                         </div>
                     )}
                     {section === Section.Branding && (

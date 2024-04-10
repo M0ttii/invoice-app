@@ -41,6 +41,67 @@ export async function getDashboardSessions() {
     });
 }
 
+export async function getAccountForKey(apiKey: string) {
+    const stripe = new Stripe(apiKey, {
+        apiVersion: '2023-10-16',
+    });
+
+    const account = await stripe.accounts.retrieve();
+    return account;
+}
+
+type AccountPair = {
+    account: Stripe.Account;
+    key: string;
+};
+
+export async function getAccountPairs(): Promise<AccountPair[]> {
+    console.log("call");
+    return new Promise(async (resolve, reject) => {
+        try {
+            const supabase = createClient();
+            const { data: keys } = await supabase.from('stripekeys').select('*');
+
+            if (!keys) {
+                resolve([]);
+                return;
+            }
+
+            const accountPairsPromises = keys.map(key => {
+                const stripe = new Stripe(key.key || '', {
+                    apiVersion: '2023-10-16',
+                });
+
+                return stripe.accounts.retrieve()
+                    .then(accountName => ({ account: accountName, key: key.key || '' }));
+            });
+
+            const accountPairs = await Promise.all(accountPairsPromises);
+            resolve(accountPairs);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export async function getAccountName(userid: string) {
+    console.log("ggs")
+    'use server';
+    const supabase = supabaseAdmin;
+    const { data: keys } = await supabase.from('stripekeys').select('*').eq('user_id', userid).single(); 
+
+    if(keys){
+        const stripe = new Stripe(keys.key || '', {
+            apiVersion: '2023-10-16',
+        });
+
+        const account = await stripe.accounts.retrieve();
+        console.log("account")
+        console.log(account);
+    }
+
+}
+
 export async function getInvoicesForCustomer(userid: string, email: string) {
     'use server';
     const supabase = supabaseAdmin;

@@ -25,6 +25,7 @@ export default function InvoiceList({ invoices }: Props) {
     function openInvoice(invoice: Invoice) {
         setSelectedInvoice(invoice);
         setOpen(true);
+        console.log(invoice)
     }
     
 

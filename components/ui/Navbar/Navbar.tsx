@@ -18,7 +18,7 @@ export default function Navbar() {
   const supabase = createClient();
   const router = getRedirectMethod() === 'client' ? useRouter() : null;
 
-  if(pathname.startsWith('/u/')) {
+  if(pathname.startsWith('/u/') || pathname.startsWith('/login')) {
     return null;
   }
 

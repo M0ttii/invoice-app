@@ -1,4 +1,5 @@
 import { Invoice } from "@/models/Invoice";
+import { cn } from "@/utils/cn";
 import * as React from "react";
 
 interface InvoiceItemProps {
@@ -91,9 +92,11 @@ const AdditionalNotes: React.FC<AdditionalNotesProps> = ({ notes }) => (
 
 interface InvoiceTemplate1Props {
   invoice: Invoice | null;
+  height: number;
+  width: number;
 }
 
-function InvoiceTemplate1({ invoice }: InvoiceTemplate1Props) {
+function InvoiceTemplate1({ invoice, height, width }: InvoiceTemplate1Props) {
   const invoiceItems = [
     {
       name: "Invoice Item 1",
@@ -128,8 +131,10 @@ function InvoiceTemplate1({ invoice }: InvoiceTemplate1Props) {
 
   const invoiceTotal = invoiceItems.reduce((acc, item) => acc + item.total, 0);
 
+  
+
   return (
-    <div className="flex flex-col pt-2.5 pb-20 h-[297mm] w-[210mm] bg-white rounded-3xl max-md:max-w-full">
+    <div className={cn("flex flex-col pt-2.5 pb-20 bg-white rounded-3xl max-md:max-w-full", ` h-[${height}mm] w-[${width}mm]`)}>
       <div className="flex flex-col px-2.5 w-full max-md:max-w-full">
         <div className="flex gap-5 p-5 text-xs rounded-xl bg-slate-100 max-md:flex-wrap max-md:max-w-full">
           <div className="flex flex-col flex-1 self-start mt-1 text-gray-900">
