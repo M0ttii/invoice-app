@@ -49,7 +49,7 @@ export function InvoiceDialog({ open, setOpen, invoice }: Props) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent onDownload={handleDownload} className="min-w-fit justify-center">
-                <div className="inline-block mt-10 overflow-visible">
+                <div ref={targetRef} className="inline-block mt-10 overflow-visible">
                     <InvoiceTemplate1 invoice={invoice} height={height} width={width} />
                 </div>
                 {/* <div ref={targetRef} className="absolute left-[10000px]">
