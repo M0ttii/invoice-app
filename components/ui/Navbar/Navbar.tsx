@@ -44,7 +44,7 @@ export default function Navbar() {
         </Link>
         <Link
           href="/settings"
-          className={pathname.startsWith('/settings') ? "text-foreground transition-colors hover:text-foreground" : "text-muted-foreground transition-colors hover:text-foreground"}
+          className={pathname.startsWith('/settings/personal') ? "text-foreground transition-colors hover:text-foreground" : "text-muted-foreground transition-colors hover:text-foreground"}
         >
           Settings
         </Link>

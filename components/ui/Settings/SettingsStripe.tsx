@@ -1,4 +1,3 @@
-'use client'
 import { Delete, DeleteIcon, Edit, Trash } from "lucide-react";
 import { Button } from "../button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../card";
@@ -7,45 +6,49 @@ import { Label } from "../label";
 import { Switch } from "../switch";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../select";
 import { getAccountName, getAccountPairs } from "@/app/actions";
-import { Suspense, use, useEffect, useState } from "react";
+import { Suspense, cache, use, useEffect, useState } from "react";
 import Stripe from "stripe";
 import useSWR, { Fetcher } from 'swr'
 import { set } from "react-hook-form";
-
-interface AccountProps {
-    name: string | null | undefined;
-}
-
-const Account = (props: AccountProps) => {
-    return (
-        <div className="flex justify-between w-1/2 h-10 dark:bg-[#18181B] border rounded-md">
-            <div className="flex justify-start items-center pl-2 space-x-2">
-                <div className="rounded-xl h-7 w-7 bg-green-300"></div>
-                <Label>{props.name}</Label>
-            </div>
-            <div className="flex justify-end items-center pr-2">
-                <Button className="dark" variant="ghost" size="icon">
-                    <Edit className="h-4 w-4" />
-                </Button>
-                <Button className="dark" variant="ghost" size="icon">
-                    <Trash className="h-4 w-4 text-red-500" />
-                </Button>
-            </div>
-        </div>
-    )
-}
+import { createClient } from "@/utils/supabase/client";
+import { Account } from "./Account";
 
 interface AccountPair {
     account: Stripe.Account;
     key: string;
 };
 
-interface SettingsStripeProps {
-    data: AccountPair[];
-}
+export default async function SettingsStripe() {
+    const getAccountPairs = cache(async (): Promise<AccountPair[]> => {
+        console.log("call");
+        return new Promise(async (resolve, reject) => {
+            try {
+                const supabase = createClient();
+                const { data: keys } = await supabase.from('stripekeys').select('*');
 
+                if (!keys) {
+                    resolve([]);
+                    return;
+                }
 
-export default function SettingsStripe({ data }: SettingsStripeProps) {
+                const accountPairsPromises = keys.map(key => {
+                    const stripe = new Stripe(key.key || '', {
+                        apiVersion: '2023-10-16',
+                    });
+
+                    return stripe.accounts.retrieve()
+                        .then(accountName => ({ account: accountName, key: key.key || '' }));
+                });
+
+                const accountPairs = await Promise.all(accountPairsPromises);
+                resolve(accountPairs);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    });
+
+    const data = await getAccountPairs();
     return (
         <div className="grid gap-6">
             <Card>
