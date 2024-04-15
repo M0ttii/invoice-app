@@ -1,37 +1,15 @@
 'use client'
 import { Home, LineChart, ListFilter, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, Users2, File, Copy, Truck, MoreVertical, CreditCard, ChevronLeft, ChevronRight, XOctagon, LoaderIcon, Loader2Icon, CopyIcon } from "lucide-react";
 import Link from "next/link";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import Image from 'next/image';
-import { Button } from "../button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Progress } from "../progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "../separator";
-import { Pagination, PaginationContent, PaginationItem } from "../pagination";
 import Stripe from "stripe";
-import { Suspense, useState, } from "react";
-import { Skeleton } from "../skeleton";
-import { createClient } from "@/utils/supabase/client";
-import { getDashboardSessions } from "@/app/actions";
 import InvoiceCardLoading from "./InvoiceCardLoading";
 import InvoiceLink from "./InvoiceLink";
 import InvoiceList from "./InvoiceList";
 import InvoiceCard from "./InvoiceCard";
 import { Invoice, Item } from "@/models/Invoice";
+import { useState } from "react";
 
 export const revalidate = 60;
 

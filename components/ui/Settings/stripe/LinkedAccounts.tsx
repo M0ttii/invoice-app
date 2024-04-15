@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server"
 
 interface AccountPair {
     account: Stripe.Account;
-    imageUrl: string;
+    imageUrl: string | null;
     key: string;
 };
 
@@ -25,16 +25,28 @@ export const LinkedAccounts = async () => {
                 }
 
                 console.log(keys[0])
-                const accountPairsPromises = keys.map(key => {
+                const accountPairsPromises = keys.map(async key => {
                     const stripe = new Stripe(key.key || '', {
                         apiVersion: '2023-10-16',
                     });
 
-                    return stripe.accounts.retrieve()
-                        .then(accountName => ({ account: accountName, key: key.key || '' }));
+                    const account = await stripe.accounts.retrieve();
+                    try{
+                        const imageUrl = await stripe.files.retrieve(account.settings?.branding.icon as string);
+                        return { 
+                            account: account, 
+                            key: key.key || '', 
+                            imageUrl: imageUrl.url
+                        };
+                    } catch (error) {
+                        return { 
+                            account: account, 
+                            key: key.key || '', 
+                            imageUrl: null
+                        };
+                    }
                 });
 
-                const filePromise
 
                 const accountPairs = await Promise.all(accountPairsPromises);
                 resolve(accountPairs);
@@ -46,7 +58,7 @@ export const LinkedAccounts = async () => {
 
 
     const data = await getAccountPairs();
-    console.log((data[0].account.settings?.branding.icon as Stripe.File).title)
+    console.log(data[0].imageUrl);
     return (
         <Card>
             <CardHeader>
