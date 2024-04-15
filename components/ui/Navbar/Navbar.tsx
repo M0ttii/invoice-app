@@ -43,8 +43,8 @@ export default function Navbar() {
           Dashboard
         </Link>
         <Link
-          href="/settings"
-          className={pathname.startsWith('/settings/personal') ? "text-foreground transition-colors hover:text-foreground" : "text-muted-foreground transition-colors hover:text-foreground"}
+          href="/settings/personal"
+          className={pathname.startsWith('/settings') ? "text-foreground transition-colors hover:text-foreground" : "text-muted-foreground transition-colors hover:text-foreground"}
         >
           Settings
         </Link>

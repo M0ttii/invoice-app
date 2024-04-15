@@ -1,16 +1,22 @@
 import { Edit, Trash } from "lucide-react";
 import { Button } from "../button";
 import { Label } from "../label";
+import Image from "next/image";
 
 interface AccountProps {
     name: string | null | undefined;
+    icon: string | null;
 }
 
 export const Account = (props: AccountProps) => {
     return (
         <div className="flex justify-between w-1/2 h-10 dark:bg-[#18181B] border rounded-md">
             <div className="flex justify-start items-center pl-2 space-x-2">
-                <div className="rounded-xl h-7 w-7 bg-green-300"></div>
+                <div className="rounded-xl h-7 w-7 bg-green-300">
+                    {props.icon && (
+                        <Image src={props.icon} alt="icon" width={28} height={28} />
+                    )}
+                </div>
                 <Label>{props.name}</Label>
             </div>
             <div className="flex justify-end items-center pr-2">

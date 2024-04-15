@@ -1,5 +1,5 @@
 'use client'
-import { CopyIcon } from "lucide-react";
+import { CopyIcon, ExternalLink } from "lucide-react";
 import { Button } from "../button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../card";
 import { Progress } from "../progress";
@@ -10,6 +10,10 @@ import { Suspense, useEffect, useState } from "react";
 interface Props {
     userID: string | undefined;
 }
+
+const openInNewTab = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+};
 
 export default function InvoiceLink() {
     return (
@@ -31,12 +35,6 @@ export default function InvoiceLink() {
                                     </Button> */}
                     <div className="w-full h-10 bg-white dark:bg-[#18181B] border rounded-lg text-center items-center flex p-2">
                         <LinkComponent />
-
-                        <div className="flex w-full justify-end">
-                            <Button className="w-8 h-8 hover:bg-zinc-100 hover:text-zinc-50" variant="ghost" size="icon">
-                                <CopyIcon className="h-4 w-4 text-zinc-900 dark:text-white" />
-                            </Button>
-                        </div>
                     </div>
                 </CardFooter>
             </Card>
@@ -85,9 +83,19 @@ const LinkComponent = () => {
 
     return (
         userID ? (
-            <div className="flex justify-start font-mono text-nowrap  sm:text-wrap text-sm text-zinc-900 dark:text-[#ffffff]/70">
-                http://localhost:3000/u/{userID}
-            </div>
+            <>
+                <div className="flex justify-start font-mono text-nowrap  sm:text-wrap text-sm text-zinc-900 dark:text-[#ffffff]/70">
+                    http://localhost:3000/u/{userID}
+                </div>
+                <div className="flex w-full justify-end">
+                    <Button className="w-8 h-8 hover:bg-zinc-100 hover:text-zinc-50 hover:bg-muted" variant="ghost" size="icon">
+                        <CopyIcon className="h-4 w-4 text-zinc-900 dark:text-white" />
+                    </Button>
+                    <Button className="w-8 h-8 hover:bg-zinc-100 hover:text-zinc-50 hover:bg-muted" variant="ghost" size="icon">
+                        <ExternalLink onClick={() => openInNewTab("http://localhost:3000/u/" + userID)} className="h-4 w-4 text-zinc-900 dark:text-white " />
+                    </Button>
+                </div >
+            </>
         ) : (
             <Skeleton className="w-full h-5" />
         )
