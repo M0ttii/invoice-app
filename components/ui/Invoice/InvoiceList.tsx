@@ -95,7 +95,7 @@ export default function InvoiceList({ invoices }: Props) {
                                 </TableHeader>
                                 <TableBody>
                                     {invoices.map((session, index) => (
-                                        <TableRow className="" key={index}>
+                                        <TableRow className="" isSelected={true} key={index}>
                                             <TableCell>
                                                 <div className="font-medium">{session.customer_details?.name}</div>
                                                 <div className="hidden text-sm text-muted-foreground md:inline">

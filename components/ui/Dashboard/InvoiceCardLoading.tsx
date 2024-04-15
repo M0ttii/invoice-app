@@ -14,7 +14,7 @@ export default function InvoiceCardLoading() {
                 <CardHeader className="flex flex-row items-start bg-muted/50">
                     <div className="grid gap-0.5">
                         <CardTitle className="group flex items-center gap-3 text-lg">
-                            <Skeleton className="h-5 w-[150px]" />
+                            <Skeleton className="h-10 w-[150px]" />
                             <Button
                                 size="icon"
                                 variant="outline"
@@ -24,9 +24,6 @@ export default function InvoiceCardLoading() {
                                 <span className="sr-only">Copy Order ID</span>
                             </Button>
                         </CardTitle>
-                        <CardDescription>
-                            <Skeleton className="h-5 w-[150px]" />
-                        </CardDescription>
                     </div>
                     <div className="ml-auto flex items-center gap-1">
                         <Button size="sm" variant="outline" className="h-8 gap-1">

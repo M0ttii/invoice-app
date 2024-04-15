@@ -9,7 +9,7 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-visible">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm border-separate border-spacing-y-2 ", className)}
+      className={cn("w-full caption-bottom text-sm  border-separate border-spacing-y-2 ", className)}
       {...props}
     />
   </div>
@@ -53,13 +53,14 @@ TableFooter.displayName = "TableFooter"
 
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableRowElement> & { isSelected?: boolean }
+>(({ className, isSelected, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
       "border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-      className
+      className,
+      isSelected && " [&>*]:border-red-300"
     )}
     {...props}
   />
@@ -88,7 +89,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "[&:first-child]:border-l [&:first-child]:rounded-tl-lg [&:first-child]:rounded-bl-lg [&:last-child]:rounded-tr-lg [&:last-child]:rounded-br-lg [&:last-child]:border-r border-t border-b p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "[&:first-child]:border-l   [&:first-child]:rounded-tl-lg [&:first-child]:rounded-bl-lg [&:last-child]:rounded-tr-lg [&:last-child]:rounded-br-lg [&:last-child]:border-r border-t border-b p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className
     )}
     {...props}

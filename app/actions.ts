@@ -37,6 +37,7 @@ export async function getDashboardSessions() {
 
     return await stripe.checkout.sessions.list({
         limit: 10,
+        expand: ['data.payment_intent', 'data.line_items'],
         status: 'complete',
     });
 }
@@ -132,6 +133,9 @@ export async function getInvoicesForCustomer(userid: string, email: string) {
                     amount_total: payment_intent.amount_received,
                     created: session.created,
                     currency: payment_intent.currency,
+                    amount_discount: session.total_details?.amount_discount || null,
+                    amount_shipping: session.total_details?.amount_shipping || null,
+                    amount_tax: session.total_details?.amount_tax || null,
                     customer_details: {
                         adress: {
                             city: session.customer_details?.address?.city || '',
