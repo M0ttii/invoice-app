@@ -96,7 +96,7 @@ interface InvoiceTemplate1Props {
   width: number;
 }
 
-export const InvoiceTemplate1 = ({ invoice, height, width }: InvoiceTemplate1Props) => {
+export default function InvoiceTemplate1 ({ invoice, height, width }: InvoiceTemplate1Props) {
   const invoiceItems = [
     {
       name: "Invoice Item 1",
