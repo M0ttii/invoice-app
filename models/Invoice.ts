@@ -47,6 +47,7 @@ export type InvoiceClone = {
     currency: string | null,
     customer_details: CustomerDetails,
     items: ItemClone[],
+    unformattedAdress?: string | null,
 }
 
 export type ItemClone = {
