@@ -53,7 +53,7 @@ export default function InvoiceList({ handleSelectSession}: Props) {
     return (
         <Tabs defaultValue="week">
             <div className="flex items-center">
-                <TabsList>
+                <TabsList className=" bg-transparent">
                     <TabsTrigger value="week">Week</TabsTrigger>
                     <TabsTrigger value="month">Month</TabsTrigger>
                     <TabsTrigger value="year">Year</TabsTrigger>
@@ -62,9 +62,9 @@ export default function InvoiceList({ handleSelectSession}: Props) {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="sm"
-                                className="h-7 gap-1 text-sm"
+                                className="h-7 gap-1 text-sm bg-[#373DC7] "
                             >
                                 <ListFilter className="h-3.5 w-3.5" />
                                 <span className="sr-only sm:not-sr-only">Filter</span>
@@ -86,8 +86,8 @@ export default function InvoiceList({ handleSelectSession}: Props) {
                     </DropdownMenu>
                     <Button
                         size="sm"
-                        variant="outline"
-                        className="h-7 gap-1 text-sm"
+                        variant="ghost"
+                        className="h-7 gap-1 text-sm bg-[#373DC7]"
                     >
                         <File className="h-3.5 w-3.5" />
                         <span className="sr-only sm:not-sr-only">Export</span>

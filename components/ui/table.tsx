@@ -60,7 +60,7 @@ const TableRow = React.forwardRef<
     className={cn(
       "border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
       className,
-      isSelected && " [&>*]:border-red-300"
+      isSelected && " "
     )}
     {...props}
   />

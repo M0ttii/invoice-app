@@ -11,26 +11,48 @@ import Stripe from "stripe";
 import { getInvoicesForCustomer, retrieveCheckoutSessions } from "@/app/actions";
 import { Invoice } from "@/models/Invoice";
 import { useState } from "react";
+import { Label } from "../label";
+import { cn } from "@/utils/cn";
 import { InvoiceDialog } from "./InvoiceDialog";
+import { Public_Sans } from 'next/font/google'
 
 interface Props {
     invoices: Invoice[];
+    handleOnClick: (invoice: Invoice) => void;
 }
 
-export default function InvoiceList({ invoices }: Props) {
+const publicSans = Public_Sans({
+    display: "swap",
+})
+
+const NameAndPicture = () => {
+    return (
+        <div className="flex flex-col pb-0 items-center">
+            <div className="bg-red-400 rounded-md w-16 h-16 mb-10 shadow-md"></div>
+            <div className="flex flex-col items-center space-y-2">
+                <Label className={cn("font-bold  text-4xl ", publicSans.className)}>Hallo</Label>
+                <Label className={cn(publicSans.className, " text-[#ffffff]/50")}>Submit your email to retrieve your invoices</Label>
+            </div>
+        </div>
+    )
+}
+
+export default function InvoiceList({ invoices, handleOnClick }: Props) {
     // const orders = getInvoicesForCustomer(user_id, customer_email);
     const [open, setOpen] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
     function openInvoice(invoice: Invoice) {
         setSelectedInvoice(invoice);
-        setOpen(true);
-        console.log(invoice)
+        handleOnClick(invoice);
+        // setOpen(true);
+        // console.log(invoice)
     }
-    
+
+
 
     return (
-        <div className="w-full">
+        <div className="">
             <InvoiceDialog invoice={selectedInvoice} open={open} setOpen={setOpen} />
             <Tabs defaultValue="week">
                 <div className="flex items-center">
@@ -68,7 +90,7 @@ export default function InvoiceList({ invoices }: Props) {
                     </div>
                 </div>
                 <TabsContent value="week">
-                    <Card>
+                    <Card className="backdrop-filter backdrop-blur-[100px] backdrop-saturate-[80%] border-opacity-0 bg-black/20">
                         <CardHeader className="px-7">
                             <CardTitle>Orders</CardTitle>
                             <CardDescription>
@@ -95,7 +117,7 @@ export default function InvoiceList({ invoices }: Props) {
                                 </TableHeader>
                                 <TableBody>
                                     {invoices.map((session, index) => (
-                                        <TableRow className="" isSelected={true} key={index}>
+                                        <TableRow className="dark:bg-[#151518] hover:z-100 hover:cursor-pointer transition ease-in-out delay-50 hover:scale-[1.01] duration-300" isSelected={true} key={index}>
                                             <TableCell>
                                                 <div className="font-medium">{session.customer_details?.name}</div>
                                                 <div className="hidden text-sm text-muted-foreground md:inline">
@@ -127,5 +149,6 @@ export default function InvoiceList({ invoices }: Props) {
                 </TabsContent>
             </Tabs>
         </div>
+
     );
 }

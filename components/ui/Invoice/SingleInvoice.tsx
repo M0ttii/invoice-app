@@ -1,28 +1,30 @@
-
-import { ChevronLeft, ChevronRight, Copy, CreditCard, MoreVertical, Truck } from "lucide-react";
+import { Invoice } from "../../../models/Invoice";
 import { Button } from "../button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../dropdown-menu";
 import { Separator } from "../separator";
-import { Pagination, PaginationContent, PaginationItem } from "../pagination";
-import { Invoice } from "@/models/Invoice";
 import { convertInvoiceToClone } from "@/utils/converter";
-import InvoiceCardLoading from "./InvoiceCardLoading";
+import { Pagination, PaginationContent, PaginationItem } from "../pagination";
+import { ChevronLeft, ChevronRight, Copy, CreditCard, MoreVertical, Truck } from "lucide-react";
+import { useEffect } from "react";
+import 'aos/dist/aos.css';
+import AOS from 'aos';
 
-interface Props {
+interface SingleInvoiceProps {
     invoice: Invoice | null;
 }
 
-
-export default function InvoiceCard({ invoice }: Props) {
-
+export default function SingleInvoice({invoice}: SingleInvoiceProps){
+    useEffect(() => {
+        AOS.init();
+    }, [])
     if (!invoice) {
         return null;
     }
     const clone = convertInvoiceToClone(invoice);
     return (
-        <Card className="overflow-hidden">
-            <CardHeader className="flex flex-row items-start bg-muted/50">
+        <Card data-aos="zoom-in-down" data-aos-easing="ease-out" className="overflow-hidden backdrop-filter backdrop-blur-[100px] backdrop-saturate-[80%] border-opacity-0 bg-[#1E1E1E]/40">
+            <CardHeader className="flex flex-row items-start bg-[#0F0F14]/20">
                 <div className="grid gap-0.5">
                     <CardTitle className="group flex items-center gap-2 text-lg">
                         Order ID: {clone.id}
@@ -41,23 +43,15 @@ export default function InvoiceCard({ invoice }: Props) {
                     <Button size="sm" variant="ghost" className="h-8 gap-1 bg-[#373DC7]">
                         <Truck className="h-3.5 w-3.5" />
                         <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap ">
-                            Open Invoice
+                            Edit Invoice
                         </span>
                     </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="outline" className="h-8 w-8">
-                                <MoreVertical className="h-3.5 w-3.5" />
-                                <span className="sr-only">More</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Export</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Trash</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button size="sm" variant="ghost" className="h-8 gap-1 bg-[#373DC7]">
+                        <Truck className="h-3.5 w-3.5" />
+                        <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap ">
+                            Download
+                        </span>
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="p-6 text-sm">
@@ -73,20 +67,7 @@ export default function InvoiceCard({ invoice }: Props) {
                             />
                         ))}
                     </ul>
-                    <Separator className="my-2" />
                     <ul className="grid gap-3">
-                        <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span>{clone.amount_subtotal ? clone.amount_subtotal : "$0.00"}</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Shipping</span>
-                            <span>{clone.amount_shipping ? clone.amount_shipping : "$0.00"}</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Tax</span>
-                            <span>{clone.amount_tax ? clone.amount_shipping : "$0.00"}</span>
-                        </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
                             <span>{clone.amount_total ? clone.amount_total : "$0.00"}</span>
@@ -147,28 +128,8 @@ export default function InvoiceCard({ invoice }: Props) {
                     </dl>
                 </div>
             </CardContent>
-            <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
-                <div className="text-xs text-muted-foreground">
-                    Updated <time dateTime="2023-11-23">November 23, 2023</time>
-                </div>
-                <Pagination className="ml-auto mr-0 w-auto">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <Button size="icon" variant="outline" className="h-6 w-6">
-                                <ChevronLeft className="h-3.5 w-3.5" />
-                                <span className="sr-only">Previous Order</span>
-                            </Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <Button size="icon" variant="outline" className="h-6 w-6">
-                                <ChevronRight className="h-3.5 w-3.5" />
-                                <span className="sr-only">Next Order</span>
-                            </Button>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </CardFooter>
         </Card>
+
     )
 }
 

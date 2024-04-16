@@ -10,6 +10,7 @@ import InvoiceList from "./InvoiceList";
 import InvoiceCard from "./InvoiceCard";
 import { Invoice, Item } from "@/models/Invoice";
 import { useState } from "react";
+import { Label } from "../label";
 
 export const revalidate = 60;
 
@@ -59,25 +60,11 @@ export function Dashboard() {
     }
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-[#161618]">
-            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-3">
-                <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                    <Breadcrumb className="hidden md:flex">
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link href="#">Dashboard</Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link href="#">Invoices</Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                    <div className="relative ml-auto flex-1 md:grow-0">
+        <div className="flex min-h-screen w-full flex-col bg-[#08080B] lg:px-40 lg:pt-20 md-px-40 sm:px-0">
+            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+                <header className="sticky top-0 z-30 flex h-14 items-center gap-4  px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+                    {/* <Label className="text-2xl font-bold text-white/70 sm:visible md:visible lg:visible invisible">Dashboard</Label> */}
+                    <div className="relative ml-auto flex-1 md:grow-0 sm:visible md:visible lg:visible xl:visible invisible">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"

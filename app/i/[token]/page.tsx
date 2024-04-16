@@ -1,25 +1,17 @@
-'use server'
-
+import InvoicePortal from "@/components/ui/Invoice/InvoicePortal";
 import { Invoice, Item } from "@/models/Invoice";
 import { supabaseAdmin } from "@/utils/supabase/admin";
-import { createClient } from "@/utils/supabase/server";
+import Jwt from "jsonwebtoken";
 import Stripe from "stripe";
-import  Jwt  from "jsonwebtoken";
-import { send } from "process";
-import { sendTokenMail } from "@/aws/email";
 
-type SessionWithExpandedPaymentIntent = Stripe.Checkout.Session & {
-    payment_intent: Stripe.PaymentIntent;
-};
 
-export async function retrievePaymentIntents(apiKey: string, paymentIntentId: string) {
-    const stripe = new Stripe(apiKey, {
-        apiVersion: '2023-10-16',
-    });
-    return await stripe.paymentIntents.retrieve(paymentIntentId);
+
+type TokenMailObject = {
+    customer_email: string;
+    owner_email: string;
 }
 
-export async function retrieveCheckoutSessions(apiKey: string, email: string) {
+async function retrieveCheckoutSessions(apiKey: string, email: string) {
     const stripe = new Stripe(apiKey, {
         apiVersion: '2023-10-16',
     });
@@ -31,100 +23,11 @@ export async function retrieveCheckoutSessions(apiKey: string, email: string) {
     return sessions;
 }
 
-export async function getDashboardSessions() {
-    const supabase = createClient();
-    const { data: stripeKey } = await supabase.from('stripekeys').select('*').single();
-    const stripe = new Stripe(stripeKey?.key || '', {
-        apiVersion: '2023-10-16',
-    });
-
-    return await stripe.checkout.sessions.list({
-        limit: 10,
-        expand: ['data.payment_intent', 'data.line_items'],
-        status: 'complete',
-    });
-}
-
-export async function getAccountForKey(apiKey: string) {
-    const stripe = new Stripe(apiKey, {
-        apiVersion: '2023-10-16',
-    });
-
-    const account = await stripe.accounts.retrieve();
-    return account;
-}
-
-type AccountPair = {
-    account: Stripe.Account;
-    key: string;
+type SessionWithExpandedPaymentIntent = Stripe.Checkout.Session & {
+    payment_intent: Stripe.PaymentIntent;
 };
 
-export async function getAccountPairs(): Promise<AccountPair[]> {
-    console.log("call");
-    return new Promise(async (resolve, reject) => {
-        try {
-            const supabase = createClient();
-            const { data: keys } = await supabase.from('stripekeys').select('*');
-
-            if (!keys) {
-                resolve([]);
-                return;
-            }
-
-            const accountPairsPromises = keys.map(key => {
-                const stripe = new Stripe(key.key || '', {
-                    apiVersion: '2023-10-16',
-                });
-
-                return stripe.accounts.retrieve()
-                    .then(accountName => ({ account: accountName, key: key.key || '' }));
-            });
-
-            const accountPairs = await Promise.all(accountPairsPromises);
-            resolve(accountPairs);
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-export async function getAccountName(userid: string) {
-    console.log("ggs")
-    'use server';
-    const supabase = supabaseAdmin;
-    const { data: keys } = await supabase.from('stripekeys').select('*').eq('user_id', userid).single(); 
-
-    if(keys){
-        const stripe = new Stripe(keys.key || '', {
-            apiVersion: '2023-10-16',
-        });
-
-        const account = await stripe.accounts.retrieve();
-        console.log("account")
-        console.log(account);
-    }
-
-}
-
-type TokenMailObject = {
-    customer_email: string;
-    owner_email: string;
-}
-
-export async function generateTokenMail(email: string, user_id: string){
-    'use server';
-
-    const object: TokenMailObject = {
-        customer_email: email,
-        owner_email: user_id,
-    }
-
-    const token = Jwt.sign(object, "javainuse-secret-key");
-    sendTokenMail({to: email, tokenLink: "http://localhost/i/" + token});
-
-}
-
-export async function getInvoicesForCustomer(userid: string, email: string) {
+async function getInvoicesForCustomer(userid: string, email: string) {
     'use server';
     const supabase = supabaseAdmin;
     const { data: keys } = await supabase.from('stripekeys').select('*').eq('user_id', userid);
@@ -192,4 +95,18 @@ export async function getInvoicesForCustomer(userid: string, email: string) {
     } catch (error) {
         return [];
     }
+}
+
+export default async function InvoiceTokenSite({params}: {params: {token: string}}) {
+
+    console.log(params.token);
+    const to = Jwt.verify(params.token, "javainuse-secret-key");
+    const decoded = to as TokenMailObject;
+    const invoices = await getInvoicesForCustomer(decoded.owner_email, decoded.customer_email);
+
+    return (
+		<div className="w-full h-screen px-10 backdrop-blur-3xl  bg-[radial-gradient(50%_50%_at_50%_50%,_rgb(25,21,47)_0%,_rgb(11.07,_10.9,_13.04)_100%)] bg-[rgba(255,_255,_255,_1)]"> {/* Modified line */}
+				<InvoicePortal invoices={invoices} ></InvoicePortal>
+		</div>
+	);
 }
