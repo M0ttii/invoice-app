@@ -1,5 +1,6 @@
 import { Invoice, InvoiceClone } from "@/models/Invoice";
 import { Item, ItemClone } from "@/models/Invoice";
+import React from "react";
 
 export function convertInvoiceToClone(invoice: Invoice): InvoiceClone {
     return {
@@ -18,8 +19,23 @@ export function convertInvoiceToClone(invoice: Invoice): InvoiceClone {
                 total: (item.total / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
             };
             return itemClone;
-        })
+        }),
+        unformattedAdress: constructAdressString(invoice),
     };
+}
+
+export function getUnformattedAdressString(invoice: InvoiceClone | null){
+    const adressString = invoice?.unformattedAdress || '';
+    const adressLines = adressString.split('\n');
+    return adressLines.map((line, index) => {
+        return React.createElement('span', { key: index }, line);
+    
+    });
+}
+
+function constructAdressString(invoice: Invoice | null){
+    if(!invoice) return '';
+    return invoice.customer_details.name + '\n' + invoice.customer_details.adress.line1 + '\n' + invoice.customer_details.adress.line2 + '\n' + invoice.customer_details.adress.city + ', ' + invoice.customer_details.adress.country + ' ' + invoice.customer_details.adress.postal_code;
 }
 
 function unixToDate(unix: number): Date {

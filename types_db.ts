@@ -115,18 +115,21 @@ export type Database = {
           id: number
           key: string | null
           user_id: string | null
+          website: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           key?: string | null
           user_id?: string | null
+          website?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           key?: string | null
           user_id?: string | null
+          website?: string | null
         }
         Relationships: [
           {
@@ -211,23 +214,32 @@ export type Database = {
         Row: {
           avatar_url: string | null
           billing_address: Json | null
+          brand_description: string | null
+          brand_name: string | null
           full_name: string | null
           id: string
           payment_method: Json | null
+          picture_url: string | null
         }
         Insert: {
           avatar_url?: string | null
           billing_address?: Json | null
+          brand_description?: string | null
+          brand_name?: string | null
           full_name?: string | null
           id: string
           payment_method?: Json | null
+          picture_url?: string | null
         }
         Update: {
           avatar_url?: string | null
           billing_address?: Json | null
+          brand_description?: string | null
+          brand_name?: string | null
           full_name?: string | null
           id?: string
           payment_method?: Json | null
+          picture_url?: string | null
         }
         Relationships: [
           {

@@ -10,10 +10,14 @@ export default async function InvoicePage({ params }: { params: { userid: string
 
     const { data: existingKey } = await supabase.from('stripekeys').select('*').eq('user_id', params.userid).single();
 
-    console.log(existingKey?.key);
+    if(!existingKey){
+        return (
+            <div>Account not found</div>
+        )
+    }
 
     return(
-        <Invoice userid={params.userid}/>
+        <Invoice stripekey={existingKey.key} userid={params.userid}/>
     );
 
 }

@@ -13,17 +13,15 @@ import { set } from "react-hook-form";
 import { createClient } from "@/utils/supabase/client";
 import { Account } from "../Account";
 import { LinkedAccounts } from "./LinkedAccounts";
-
-interface AccountPair {
-    account: Stripe.Account;
-    key: string;
-};
+import LinkedAccountsSuspense from "./LinkedAccountsSuspense";
 
 export default function SettingsStripe() {
     
     return (
         <div className="grid gap-6">
-            <LinkedAccounts></LinkedAccounts>
+            <Suspense fallback={<LinkedAccountsSuspense/>}>
+                <LinkedAccounts></LinkedAccounts>
+            </Suspense>
             <Card>
                 <CardHeader>
                     <CardTitle>Payment Type</CardTitle>

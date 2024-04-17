@@ -25,7 +25,7 @@ type CustomerDetails = {
     phone: string,
 }
 
-type Adress = {
+export type Adress = {
     city: string | null,
     country: string,
     line1: string,
@@ -36,7 +36,7 @@ type Adress = {
 }
 
 export type InvoiceClone = {
-    id: string,
+    id?: string,
     amount_subtotal: string | null,
     amount_total?: string | null,
     amount_discount: string | null,

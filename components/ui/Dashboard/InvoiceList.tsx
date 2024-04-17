@@ -17,7 +17,6 @@ interface Props {
     handleSelectSession: (session: Stripe.Checkout.Session) => void;
 }
 
-
 export async function getSessions() {
     const supabase = createClient();
     const { data: stripeKey } = await supabase.from('stripekeys').select('*').single();

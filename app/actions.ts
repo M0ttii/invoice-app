@@ -120,8 +120,22 @@ export async function generateTokenMail(email: string, user_id: string){
     }
 
     const token = Jwt.sign(object, "javainuse-secret-key");
-    sendTokenMail({to: email, tokenLink: "http://localhost/i/" + token});
+    sendTokenMail({to: email, tokenLink: "http://localhost:3000/i/" + token});
+}
 
+export async function updateTitle(title: string){
+    'use server';
+    const supabase = createClient();
+    const session = await supabase.auth.getSession();
+    if(session && session.data.session){
+        const userid = session.data.session.user.id;
+        const { error } = await supabase.from('users').update({brand_name: title}).eq('id', userid);
+        if(error){
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 export async function getInvoicesForCustomer(userid: string, email: string) {

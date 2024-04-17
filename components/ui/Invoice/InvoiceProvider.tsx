@@ -1,4 +1,4 @@
-import  Invoice  from './Invoice';
+import Invoice from "@/components/ui/Invoice/Invoice";
 
 interface Props {
 	userid: string;
